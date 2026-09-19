@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Para Mi Vida Entera</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500;1,600&family=Sacramento&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Special+Elite&display=swap">
+<style>
+  html,body{ margin:0; padding:0; }
+  [hidden]{ display:none !important; }
+  img{ max-width:100%; }
+  :root{
+    --bg:#F3E4DE;
+    --surface:#FFFFFF;
+    --surface-2:#FBEDE6;
+    --envelope:#F0D9CD;
+    --envelope-flap:#E6C6B8;
+    --text:#3B1420;
+    --text-soft:#8A5A62;
+    --accent:#A32F4E;
+    --accent-2:#C79A3D;
+    --line:#E3C2BC;
+    --shadow:rgba(59,20,32,.18);
+
+    --font-display:'Playfair Display', Georgia, 'Times New Roman', serif;
+    --font-script:'Sacramento', 'Brush Script MT', cursive;
+    --font-body:'Lora', Georgia, 'Times New Roman', serif;
+    --font-mono:'Special Elite', 'Courier New', monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#180B10;
+      --surface:#241019;
+      --surface-2:#2E1420;
+      --envelope:#2B1319;
+      --envelope-flap:#33161D;
+      --text:#F3E1DC;
+      --text-soft:#C99AA5;
+      --accent:#E97C93;
+      --accent-2:#E0B85E;
+      --line:#3D1E29;
+      --shadow:rgba(0,0,0,.45);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#180B10;
+    --surface:#241019;
+    --surface-2:#2E1420;
+    --envelope:#2B1319;
+    --envelope-flap:#33161D;
+    --text:#F3E1DC;
+    --text-soft:#C99AA5;
+    --accent:#E97C93;
+    --accent-2:#E0B85E;
+    --line:#3D1E29;
+    --shadow:rgba(0,0,0,.45);
+  }
+
+  body{ background:var(--bg); }
+
+  .page{
+    position:relative;
+    font-family:var(--font-body);
+    color:var(--text);
+    background:var(--bg);
+    overflow-x:hidden;
+  }
+
+  /* ---------- ambient floating hearts ---------- */
+  .hearts{
+    position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:1;
+  }
+  .hearts span{
+    position:absolute; bottom:-10%; color:var(--accent); opacity:.22;
+    animation:drift linear infinite;
+    will-change:transform, opacity;
+  }
+  @keyframes drift{
+    0%{ transform:translateY(0) rotate(0deg); opacity:0; }
+    10%{ opacity:.28; }
+    90%{ opacity:.18; }
+    100%{ transform:translateY(-120vh) rotate(25deg); opacity:0; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hearts span{ animation:none; opacity:.12; }
+  }
+
+  /* ---------- envelope overlay ---------- */
+  .envelope-overlay{
+    position:fixed; inset:0; z-index:50;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:1.75rem;
+    background:radial-gradient(circle at 50% 35%, var(--surface-2), var(--bg));
+    padding: max(1.5rem, env(safe-area-inset-top,0px)) 1.5rem max(1.5rem, env(safe-area-inset-bottom,0px));
+    transition:opacity .8s ease, visibility .8s ease;
+  }
+  body.opened .envelope-overlay{ opacity:0; pointer-events:none; }
+
+  .envelope{
+    position:relative;
+    width:min(320px, 78vw);
+    aspect-ratio:3/2;
+    cursor:pointer;
+    perspective:900px;
+  }
+  .envelope-body{
+    position:absolute; inset:0;
+    background:var(--envelope);
+    border-radius:6px;
+    box-shadow:0 18px 34px var(--shadow);
+    display:flex; align-items:flex-end; justify-content:center;
+    padding-bottom:14%;
+  }
+  .envelope-address{
+    text-align:center; color:var(--text-soft);
+  }
+  .envelope-address .to{
+    display:block; font-family:var(--font-script); font-size:1.6rem; color:var(--text);
+  }
+  .envelope-address .note{
+    display:block; font-family:var(--font-mono); font-size:.62rem; letter-spacing:.05em; margin-top:.15rem;
+  }
+  .envelope-flap{
+    position:absolute; top:0; left:0; right:0; height:62%;
+    background:var(--envelope-flap);
+    clip-path:polygon(0 0, 100% 0, 50% 100%);
+    transform-origin:top center;
+    transition:transform .9s cubic-bezier(.6,-0.2,.35,1.3);
+    z-index:2;
+  }
+  body.opened .envelope-flap{ transform:rotateX(-178deg); }
+
+  .wax-seal{
+    position:absolute; top:52%; left:50%; transform:translate(-50%,-50%);
+    width:52px; height:52px; border-radius:50%; z-index:3;
+    background:radial-gradient(circle at 32% 30%, var(--accent-2), var(--accent) 72%);
+    box-shadow:inset 0 -3px 6px rgba(0,0,0,.35), inset 0 2px 3px rgba(255,255,255,.3), 0 4px 8px var(--shadow);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:1.3rem; line-height:1;
+    transition:transform .5s ease .1s, opacity .5s ease .1s;
+  }
+  body.opened .wax-seal{ transform:translate(-50%,-50%) scale(0); opacity:0; }
+
+  .stamp{
+    position:absolute; top:8%; right:8%; width:20%; aspect-ratio:5/6;
+    background:var(--surface);
+    border:2px dashed var(--line);
+    transform:rotate(-6deg);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+    color:var(--accent); z-index:2;
+  }
+  .stamp span:first-child{ font-size:1rem; }
+  .stamp span:last-child{ font-family:var(--font-mono); font-size:.5rem; letter-spacing:.08em; color:var(--text-soft); }
+
+  .postmark{
+    position:absolute; top:16%; right:22%; width:56px; height:56px; z-index:2;
+    border:1.5px solid var(--text-soft); border-radius:50%; opacity:.55;
+    transform:rotate(-18deg);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono); font-size:.55rem; color:var(--text-soft); text-align:center;
+  }
+
+  .open-cue{
+    font-family:var(--font-mono); font-size:.8rem; letter-spacing:.08em;
+    color:var(--text-soft); text-transform:uppercase;
+    animation:pulse 2.2s ease-in-out infinite;
+    text-align:center;
+  }
+  @keyframes pulse{ 0%,100%{ opacity:.55; } 50%{ opacity:1; } }
+  @media (prefers-reduced-motion: reduce){ .open-cue{ animation:none; } }
+
+  /* ---------- letter content ---------- */
+  .letter-content{ position:relative; z-index:2; }
+
+  .letter{
+    max-width:620px; margin:0 auto; padding:4.5rem 1.5rem 3rem;
+  }
+  .eyebrow{
+    font-family:var(--font-mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--accent); text-align:center; margin:0 0 .6rem;
+  }
+  .salutation{
+    font-family:var(--font-script); font-size:clamp(2.2rem,6vw,3.1rem); color:var(--text);
+    text-align:center; margin:0 0 1.8rem; text-wrap:balance;
+  }
+  .letter p{
+    font-size:1.08rem; line-height:1.85; color:var(--text); margin:0 0 1.3rem;
+    max-width:60ch; margin-left:auto; margin-right:auto;
+  }
+  .signature{
+    font-family:var(--font-script); font-size:1.9rem; color:var(--accent);
+    text-align:right; max-width:60ch; margin:1.6rem auto 0; line-height:1.2;
+  }
+  .signature small{
+    display:block; font-family:var(--font-body); font-style:italic; font-size:.95rem; color:var(--text-soft);
+  }
+
+  .divider{
+    display:flex; align-items:center; gap:.8rem; max-width:420px; margin:2.5rem auto; padding:0 1.5rem;
+    color:var(--line);
+  }
+  .divider::before, .divider::after{ content:""; flex:1; height:1px; background:var(--line); }
+  .divider span{ color:var(--accent); font-size:.9rem; }
+
+  /* ---------- gallery ---------- */
+  .gallery-header{ text-align:center; padding:0 1.5rem; margin-bottom:2rem; }
+  .gallery-header h2{
+    font-family:var(--font-display); font-style:italic; font-weight:600;
+    font-size:clamp(1.6rem,4vw,2.2rem); margin:.2rem 0 .4rem; text-wrap:balance;
+  }
+  .gallery-header p{
+    font-family:var(--font-mono); font-size:.75rem; letter-spacing:.05em; color:var(--text-soft); margin:0;
+  }
+
+  .gallery{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr));
+    gap:1.6rem 1.2rem; max-width:1080px; margin:0 auto; padding:0 1.5rem 1rem;
+  }
+  .polaroid{
+    background:#fdfaf7; padding:.6rem .6rem 2.1rem; box-shadow:0 10px 22px var(--shadow);
+    cursor:pointer; border:0; transition:transform .35s ease, box-shadow .35s ease;
+    font:inherit; display:block; width:100%;
+  }
+  .polaroid:hover, .polaroid:focus-visible{ transform:rotate(0deg) scale(1.04); box-shadow:0 16px 30px var(--shadow); z-index:1; }
+  .polaroid:nth-child(6n+1){ transform:rotate(-3.5deg); }
+  .polaroid:nth-child(6n+2){ transform:rotate(2.5deg); }
+  .polaroid:nth-child(6n+3){ transform:rotate(-1.5deg); }
+  .polaroid:nth-child(6n+4){ transform:rotate(3deg); }
+  .polaroid:nth-child(6n+5){ transform:rotate(-2.5deg); }
+  .polaroid:nth-child(6n){ transform:rotate(1.5deg); }
+  .polaroid img{
+    width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:var(--line);
+  }
+  .polaroid figcaption{
+    font-family:var(--font-mono); font-size:.65rem; letter-spacing:.04em; color:#5b4a44;
+    text-align:center; margin-top:.55rem;
+  }
+
+  /* ---------- closing ---------- */
+  .closing{ text-align:center; padding:3rem 1.5rem 4rem; max-width:520px; margin:0 auto; }
+  .closing .seal{
+    width:44px; height:44px; margin:0 auto 1.2rem; border-radius:50%;
+    background:radial-gradient(circle at 32% 30%, var(--accent-2), var(--accent) 72%);
+    box-shadow:inset 0 -2px 5px rgba(0,0,0,.35), inset 0 2px 3px rgba(255,255,255,.3);
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.1rem;
+  }
+  .closing h3{
+    font-family:var(--font-display); font-style:italic; font-weight:600;
+    font-size:clamp(1.5rem,4vw,2rem); margin:0 0 .5rem; text-wrap:balance;
+  }
+  .closing p{
+    font-family:var(--font-mono); font-size:.75rem; letter-spacing:.06em; color:var(--text-soft); margin:0;
+  }
+
+  /* ---------- lightbox ---------- */
+  .lightbox{
+    position:fixed; inset:0; z-index:60; background:rgba(10,4,6,.88);
+    display:flex; align-items:center; justify-content:center; padding:2rem 1.2rem;
+  }
+  .lightbox img{ max-width:100%; max-height:82vh; box-shadow:0 20px 50px rgba(0,0,0,.5); }
+  .lightbox-close{
+    position:absolute; top:max(1rem, env(safe-area-inset-top,0px)); right:1rem;
+    width:42px; height:42px; border-radius:50%; border:1px solid rgba(255,255,255,.4);
+    background:rgba(255,255,255,.08); color:#fff; font-size:1.1rem; cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="hearts" aria-hidden="true">
+    <span style="left:6%; font-size:1.1rem; animation-duration:14s; animation-delay:0s;">&#10084;</span>
+    <span style="left:18%; font-size:.8rem; animation-duration:11s; animation-delay:2s;">&#10084;</span>
+    <span style="left:32%; font-size:1.3rem; animation-duration:17s; animation-delay:4s;">&#10084;</span>
+    <span style="left:47%; font-size:.9rem; animation-duration:13s; animation-delay:1s;">&#10084;</span>
+    <span style="left:61%; font-size:1.15rem; animation-duration:15s; animation-delay:5s;">&#10084;</span>
+    <span style="left:74%; font-size:.85rem; animation-duration:12s; animation-delay:3s;">&#10084;</span>
+    <span style="left:85%; font-size:1.25rem; animation-duration:16s; animation-delay:6s;">&#10084;</span>
+    <span style="left:93%; font-size:.75rem; animation-duration:10s; animation-delay:2.5s;">&#10084;</span>
+  </div>
+
+  <div class="envelope-overlay" id="envelope" role="button" tabindex="0" aria-label="Abrir la carta">
+    <div class="envelope">
+      <div class="envelope-body">
+        <div class="envelope-address">
+          <span class="to">Mi vida entera</span>
+          <span class="note">&mdash; &Aacute;brela con cari&ntilde;o &mdash;</span>
+        </div>
+      </div>
+      <div class="stamp"><span>&#10084;</span><span>AMOR</span></div>
+      <div class="postmark">19&nbsp;SEP</div>
+      <div class="envelope-flap"></div>
+      <div class="wax-seal">&#10084;</div>
+    </div>
+    <p class="open-cue">Toca el sobre para abrirlo</p>
+  </div>
+
+  <main class="letter-content">
+    <section class="letter">
+      <p class="eyebrow">D&iacute;a del Amor y la Amistad &middot; 19 de septiembre</p>
+      <h1 class="salutation">Mi vida entera,</h1>
+
+      <p>Hay d&iacute;as que el calendario marca en rojo para recordarnos algo que contigo vivo todos los d&iacute;as: que el amor y la amistad no son cosas distintas cuando se trata de ti. Eres mi persona favorita para re&iacute;r, para callar, para no hacer nada y para hacerlo todo.</p>
+
+      <p>Cada una de estas fotos guarda un pedacito de nosotros: una mirada, una risa que se nos escap&oacute;, un instante que quisimos guardar porque sab&iacute;amos que ser&iacute;a bonito recordarlo. Verlas juntas me recuerda la suerte que tengo de compartir la vida contigo.</p>
+
+      <p>No necesito una fecha en el calendario para quererte, pero hoy la aprovecho para dec&iacute;rtelo despacio y con calma: gracias por ser mi refugio y mi aventura, mi risa f&aacute;cil y mi lugar seguro. Contigo el amor se siente tambi&eacute;n como amistad, y la amistad se siente tambi&eacute;n como hogar.</p>
+
+      <p>Que este d&iacute;a te encuentre tan feliz como me haces sentir a m&iacute; cada d&iacute;a. Feliz D&iacute;a del Amor y la Amistad, mi vida entera.</p>
+
+      <p class="signature">Con todo mi coraz&oacute;n,<small>hoy, ma&ntilde;ana y siempre.</small></p>
+    </section>
+
+    <div class="divider"><span>&#10084;</span></div>
+
+    <section class="gallery-header">
+      <h2>Nuestros recuerdos</h2>
+      <p>16 instantes que quiero guardar para siempre</p>
+    </section>
+
+    <section class="gallery" id="gallery">
+      <button class="polaroid" type="button"><img src="fotos/13ad6b68-4e7f-4966-a2d2-a7e052b892bf.jpg" alt="Recuerdo nuestro 01" loading="lazy"><figcaption>Recuerdo N&ordm; 01</figcaption></button>
+      <button class="polaroid" type="button"><img src="fotos/14c1104e-a171-42e2-81fa-562845809273.jpg" alt="Recuerdo nuestro 02" loading="lazy"><figcaption>Recuerdo N&ordm; 02</figcaption></button>
+      <button class="polaroid" type="button"><img src="fotos/248a6cfe-5211-4b18-8923-5e52746e52e7.jpg" alt="Recuerdo nuestro 03" loading="lazy"><figcaption>Recuerdo N&ordm; 03</figcaption></button>
+      <button class="polaroid" type="button"><img src="fotos/3cdca293-22d2-49d0-80ea-492b4d81797b.jpg" alt="Recuerdo nuestro 04" loading="lazy"><figcaption>Recuerdo N&ordm; 04</figcaption></button>
+      <button class="polaroid" type="button"><img src="fotos/3ce03d55-3ca4-4db1-879d-a971fbd163a6.jpg" alt="Recuerdo nuestro 05" loading="lazy"><figcaption>Recuerdo N&ordm; 05</figcaption></button>
+      <button class="polaroid" type="button"><img src="fotos/3d6ccccc-02d2-4d0e-86ce-599d3ab268d5.jpg" alt="Recuerdo nuestro 06" loading="lazy"><figcaption>Recuerdo N&ordm; 06</figcaption></button>
+      <button class="polaroid" type="button"><img src="fotos/4047f92f-3217-44a1-9626-a9948b980492.jpg" alt="Recuerdo nuestro 07" loading="lazy"><figcaption>Recuerdo N&ordm; 07</figcaption></button>
+      <button class="polaroid" type="button"><img src="fotos/85e18393-19fd-415a-9d8b-9c45fead5966.jpg" alt="Recuerdo nuestro 08" loading="lazy"><figcaption>Recuerdo N&ordm; 08</figcaption></button>
+      <button class="polaroid" type="button"><img src="fotos/8b5d1b83-dd9d-45ac-8650-da3847718641.jpg" alt="Recuerdo nuestro 09" loading="lazy"><figcaption>Recuerdo N&ordm; 09</figcaption></button>
+      <button class="polaroid" type="button"><img src="fotos/9209cc9b-b8eb-4855-9f4c-a877a2882493.jpg" alt="Recuerdo nuestro 10" loading="lazy"><figcaption>Recuerdo N&ordm; 10</figcaption></button>
+      <button class="polaroid" type="button"><img src="fotos/ac28a902-5c15-4263-ac85-95e30843ab40.jpg" alt="Recuerdo nuestro 11" loading="lazy"><figcaption>Recuerdo N&ordm; 11</figcaption></button>
+      <button class="polaroid" type="button"><img src="fotos/b47aec55-5e1d-4c30-ad6b-735e8b03948a.jpg" alt="Recuerdo nuestro 12" loading="lazy"><figcaption>Recuerdo N&ordm; 12</figcaption></button>
+      <button class="polaroid" type="button"><img src="fotos/cb3f73f5-8c1b-4ff1-afb4-65a1ec33472a.jpg" alt="Recuerdo nuestro 13" loading="lazy"><figcaption>Recuerdo N&ordm; 13</figcaption></button>
+      <button class="polaroid" type="button"><img src="fotos/cbc3e9c0-7e38-44eb-96f7-8b3037068165.jpg" alt="Recuerdo nuestro 14" loading="lazy"><figcaption>Recuerdo N&ordm; 14</figcaption></button>
+      <button class="polaroid" type="button"><img src="fotos/e8eea8f6-b535-426e-9e9a-e28c4e3fd326.jpg" alt="Recuerdo nuestro 15" loading="lazy"><figcaption>Recuerdo N&ordm; 15</figcaption></button>
+      <button class="polaroid" type="button"><img src="fotos/f63a65ab-74b8-4f73-8b3d-6e5f90400c42.jpg" alt="Recuerdo nuestro 16" loading="lazy"><figcaption>Recuerdo N&ordm; 16</figcaption></button>
+    </section>
+
+    <section class="closing">
+      <div class="seal">&#10084;</div>
+      <h3>Feliz D&iacute;a del Amor y la Amistad</h3>
+      <p>Mi vida entera &middot; 19 de septiembre</p>
+    </section>
+  </main>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox-close" id="lightbox-close" aria-label="Cerrar">&#10005;</button>
+    <img id="lightbox-img" src="" alt="Foto ampliada">
+  </div>
+
+</div>
+
+<script>
+  (function(){
+    var envelope = document.getElementById('envelope');
+    function openEnvelope(){
+      document.body.classList.add('opened');
+      setTimeout(function(){ envelope.setAttribute('hidden',''); }, 950);
+    }
+    envelope.addEventListener('click', openEnvelope);
+    envelope.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openEnvelope(); }
+    });
+
+    var lightbox = document.getElementById('lightbox');
+    var lightboxImg = document.getElementById('lightbox-img');
+    var closeBtn = document.getElementById('lightbox-close');
+
+    document.querySelectorAll('.polaroid').forEach(function(card){
+      card.addEventListener('click', function(){
+        var img = card.querySelector('img');
+        lightboxImg.src = img.src;
+        lightboxImg.alt = img.alt;
+        lightbox.hidden = false;
+      });
+    });
+    function closeLightbox(){ lightbox.hidden = true; lightboxImg.src = ''; }
+    closeBtn.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', function(e){ if(e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !lightbox.hidden) closeLightbox(); });
+  })();
+</script>
+</body>
+</html>
