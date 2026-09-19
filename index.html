@@ -264,6 +264,17 @@
     width:42px; height:42px; border-radius:50%; border:1px solid rgba(255,255,255,.4);
     background:rgba(255,255,255,.08); color:#fff; font-size:1.1rem; cursor:pointer;
   }
+
+  /* ---------- replay button ---------- */
+  .replay-btn{
+    display:none; position:fixed; left:50%; bottom:max(1.2rem, env(safe-area-inset-bottom,0px));
+    transform:translateX(-50%); z-index:40;
+    font-family:var(--font-mono); font-size:.7rem; letter-spacing:.06em; text-transform:uppercase;
+    color:#fff; background:var(--accent); border:none; border-radius:999px;
+    padding:.7rem 1.2rem; box-shadow:0 10px 24px var(--shadow); cursor:pointer;
+    align-items:center; gap:.4rem;
+  }
+  body.opened .replay-btn{ display:inline-flex; }
 </style>
 </head>
 <body>
@@ -351,6 +362,8 @@
     <img id="lightbox-img" src="" alt="Foto ampliada">
   </div>
 
+  <button class="replay-btn" id="replay" type="button">&#8635; Volver a la carta</button>
+
 </div>
 
 <script>
@@ -363,6 +376,14 @@
     envelope.addEventListener('click', openEnvelope);
     envelope.addEventListener('keydown', function(e){
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openEnvelope(); }
+    });
+
+    var replay = document.getElementById('replay');
+    replay.addEventListener('click', function(){
+      envelope.removeAttribute('hidden');
+      void envelope.offsetHeight;
+      document.body.classList.remove('opened');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
     var lightbox = document.getElementById('lightbox');
