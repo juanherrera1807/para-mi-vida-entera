@@ -210,6 +210,19 @@
     font-family:var(--font-mono); font-size:.68rem; letter-spacing:.05em; color:var(--text-soft);
     text-transform:uppercase;
   }
+  .counter-detail{
+    font-family:var(--font-body); font-style:italic; font-size:.95rem; color:var(--text);
+    margin-top:.35rem;
+  }
+  .counter-sep{ width:40px; height:1px; background:var(--line); margin:.7rem 0 .5rem; }
+  .counter-days{
+    font-family:var(--font-body); font-size:.92rem; color:var(--text-soft);
+  }
+  .counter-days strong{ color:var(--accent); font-weight:600; font-variant-numeric:tabular-nums; }
+  .counter-next{
+    font-family:var(--font-mono); font-size:.66rem; letter-spacing:.04em; color:var(--text-soft);
+    margin-top:.35rem;
+  }
 
   .divider{
     display:flex; align-items:center; gap:.8rem; max-width:420px; margin:2.5rem auto; padding:0 1.5rem;
@@ -329,8 +342,12 @@
       <h1 class="salutation">Mi vida entera,</h1>
 
       <div class="counter">
-        <span class="counter-number" id="days-count">0</span>
-        <span class="counter-label">d&iacute;as juntos desde el 18 de julio de 2020</span>
+        <span class="counter-number" id="months-count">0</span>
+        <span class="counter-label">meses juntos desde el 18 de julio de 2020</span>
+        <span class="counter-detail" id="months-detail"></span>
+        <span class="counter-sep" aria-hidden="true"></span>
+        <span class="counter-days"><strong id="days-count">0</strong> d&iacute;as a tu lado</span>
+        <span class="counter-next" id="months-next"></span>
       </div>
 
       <p>Hay d&iacute;as que el calendario marca en rojo para recordarnos algo que contigo vivo todos los d&iacute;as: que el amor y la amistad no son cosas distintas cuando se trata de ti. Eres mi persona favorita para re&iacute;r, para callar, para no hacer nada y para hacerlo todo.</p>
@@ -394,6 +411,30 @@
     today.setHours(0,0,0,0);
     var daysTogether = Math.round((today - startDate) / 86400000);
     document.getElementById('days-count').textContent = daysTogether.toLocaleString('es-ES');
+
+    // Meses cumplidos: se suma uno cada día 18 (18/08/2020 = 1 mes)
+    var ANNIVERSARY_DAY = startDate.getDate();
+    var monthsTogether = (today.getFullYear() - startDate.getFullYear()) * 12
+      + (today.getMonth() - startDate.getMonth());
+    if (today.getDate() < ANNIVERSARY_DAY) monthsTogether--;
+    monthsTogether = Math.max(0, monthsTogether);
+    document.getElementById('months-count').textContent = monthsTogether.toLocaleString('es-ES');
+
+    var years = Math.floor(monthsTogether / 12);
+    var restMonths = monthsTogether % 12;
+    var parts = [];
+    if (years) parts.push(years + (years === 1 ? ' año' : ' años'));
+    if (restMonths) parts.push(restMonths + (restMonths === 1 ? ' mes' : ' meses'));
+    document.getElementById('months-detail').textContent = parts.length ? parts.join(' y ') : '¡Nuestro primer mes!';
+
+    var nextDate = new Date(startDate.getFullYear(), startDate.getMonth() + monthsTogether + 1, ANNIVERSARY_DAY);
+    var daysToNext = Math.round((nextDate - today) / 86400000);
+    var MONTH_NAMES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    var nextText = (today.getDate() === ANNIVERSARY_DAY)
+      ? '¡Hoy cumplimos ' + monthsTogether + ' meses! ❤'
+      : 'Faltan ' + daysToNext + (daysToNext === 1 ? ' día' : ' días') + ' para los ' + (monthsTogether + 1)
+        + ' meses · ' + nextDate.getDate() + ' de ' + MONTH_NAMES[nextDate.getMonth()];
+    document.getElementById('months-next').textContent = nextText;
 
     var envelope = document.getElementById('envelope');
     function openEnvelope(){
