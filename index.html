@@ -69,54 +69,77 @@
     gap:1.75rem;
     background:radial-gradient(circle at 50% 35%, var(--surface-2), var(--bg));
     padding: max(1.5rem, env(safe-area-inset-top,0px)) 1.5rem max(1.5rem, env(safe-area-inset-bottom,0px));
-    transition:opacity .8s ease, visibility .8s ease;
+    transition:opacity 1.2s ease, visibility 1.2s ease;
   }
   body.opened .envelope-overlay{ opacity:0; pointer-events:none; }
 
   .envelope{
     position:relative;
-    width:min(320px, 78vw);
+    width:min(420px, 88vw);
     aspect-ratio:3/2;
     cursor:pointer;
     perspective:900px;
+    transition:transform 1.6s ease;
   }
+  body.letter-out .envelope{ transform:translateY(22%); }
   .envelope-body{
-    position:absolute; inset:0;
+    position:absolute; inset:0; z-index:2;
     background:var(--envelope);
     border-radius:6px;
     box-shadow:0 18px 34px var(--shadow);
     display:flex; align-items:flex-end; justify-content:center;
     padding-bottom:6%;
   }
+
+  /* ---------- letter sliding out of the envelope ---------- */
+  .letter-paper{
+    position:absolute; left:7%; right:7%; bottom:6%; height:88%; z-index:1;
+    background:#fffaf6; border-radius:4px;
+    box-shadow:0 6px 16px var(--shadow);
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+    padding-top:9%; gap:.45rem;
+    transition:transform 1.6s cubic-bezier(.4,0,.2,1), opacity 1.2s ease;
+  }
+  .letter-paper .paper-title{ font-family:var(--font-script); font-size:1.4rem; color:var(--accent); }
+  .letter-paper .paper-line{ width:62%; height:1px; background:var(--line); }
+  .letter-paper .paper-line:nth-of-type(odd){ width:48%; }
+  body.letter-out .letter-paper{ transform:translateY(-62%); }
+  body.opened .letter-paper{ transform:translateY(-62%) scale(1.6); opacity:0; }
+  .envelope.no-anim, .envelope.no-anim *{ transition:none !important; animation:none !important; }
   .envelope-address{
     text-align:center; color:var(--text-soft);
   }
   .envelope-address .to{
-    display:block; font-family:var(--font-script); font-size:1.35rem; color:var(--text);
+    display:block; font-family:var(--font-script); font-size:1.8rem; color:var(--text);
   }
   .envelope-address .note{
-    display:block; font-family:var(--font-mono); font-size:.62rem; letter-spacing:.05em; margin-top:.15rem;
+    display:block; font-family:var(--font-mono); font-size:.82rem; letter-spacing:.05em; margin-top:.15rem;
   }
   .envelope-flap{
     position:absolute; top:0; left:0; right:0; height:62%;
     background:var(--envelope-flap);
     clip-path:polygon(0 0, 100% 0, 50% 100%);
     transform-origin:top center;
-    transition:transform .9s cubic-bezier(.6,-0.2,.35,1.3);
-    z-index:2;
+    transition:transform 1.8s cubic-bezier(.45,.05,.25,1) .6s;
+    z-index:4;
   }
-  body.opened .envelope-flap{ transform:rotateX(-178deg); }
+  body.opening .envelope-flap{ transform:rotateX(-178deg); }
+  body.letter-out .envelope-flap{ z-index:0; }
 
   .wax-seal{
     position:absolute; top:52%; left:50%; transform:translate(-50%,-50%);
-    width:52px; height:52px; border-radius:50%; z-index:3;
+    width:66px; height:66px; border-radius:50%; z-index:5;
     background:radial-gradient(circle at 32% 30%, var(--accent-2), var(--accent) 72%);
     box-shadow:inset 0 -3px 6px rgba(0,0,0,.35), inset 0 2px 3px rgba(255,255,255,.3), 0 4px 8px var(--shadow);
     display:flex; align-items:center; justify-content:center;
-    color:#fff; font-size:1.3rem; line-height:1;
-    transition:transform .5s ease .1s, opacity .5s ease .1s;
+    color:#fff; font-size:1.65rem; line-height:1;
   }
-  body.opened .wax-seal{ transform:translate(-50%,-50%) scale(0); opacity:0; }
+  body.opening .wax-seal{ animation:seal-break .8s ease-in forwards; }
+  @keyframes seal-break{
+    0%{ transform:translate(-50%,-50%) scale(1); opacity:1; }
+    35%{ transform:translate(-50%,-50%) scale(1.25); opacity:1; }
+    100%{ transform:translate(-50%,-50%) scale(0) rotate(40deg); opacity:0; }
+  }
 
   .stamp{
     position:absolute; top:8%; right:8%; width:20%; aspect-ratio:5/6;
@@ -124,25 +147,27 @@
     border:2px dashed var(--line);
     transform:rotate(-6deg);
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
-    color:var(--accent); z-index:2;
+    color:var(--accent); z-index:3;
   }
-  .stamp span:first-child{ font-size:1rem; }
-  .stamp span:last-child{ font-family:var(--font-mono); font-size:.5rem; letter-spacing:.08em; color:var(--text-soft); }
+  .stamp span:first-child{ font-size:1.3rem; }
+  .stamp span:last-child{ font-family:var(--font-mono); font-size:.66rem; letter-spacing:.08em; color:var(--text-soft); }
 
   .postmark{
-    position:absolute; top:16%; right:22%; width:56px; height:56px; z-index:2;
+    position:absolute; top:16%; right:22%; width:70px; height:70px; z-index:3;
     border:1.5px solid var(--text-soft); border-radius:50%; opacity:.55;
     transform:rotate(-18deg);
     display:flex; align-items:center; justify-content:center;
-    font-family:var(--font-mono); font-size:.55rem; color:var(--text-soft); text-align:center;
+    font-family:var(--font-mono); font-size:.7rem; color:var(--text-soft); text-align:center;
   }
 
   .open-cue{
-    font-family:var(--font-mono); font-size:.8rem; letter-spacing:.08em;
+    font-family:var(--font-mono); font-size:1rem; letter-spacing:.08em;
     color:var(--text-soft); text-transform:uppercase;
     animation:pulse 2.2s ease-in-out infinite;
     text-align:center;
+    transition:opacity .5s ease;
   }
+  body.opening .open-cue{ animation:none; opacity:0; }
   @keyframes pulse{ 0%,100%{ opacity:.55; } 50%{ opacity:1; } }
   @media (prefers-reduced-motion: reduce){ .open-cue{ animation:none; } }
 
@@ -153,7 +178,7 @@
     max-width:620px; margin:0 auto; padding:4.5rem 1.5rem 3rem;
   }
   .eyebrow{
-    font-family:var(--font-mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase;
+    font-family:var(--font-mono); font-size:.86rem; letter-spacing:.14em; text-transform:uppercase;
     color:var(--accent); text-align:center; margin:0 0 .6rem;
   }
   .salutation{
@@ -161,15 +186,15 @@
     text-align:center; margin:0 0 1.8rem; text-wrap:balance;
   }
   .letter p{
-    font-size:1.08rem; line-height:1.85; color:var(--text); margin:0 0 1.3rem;
+    font-size:1.24rem; line-height:1.85; color:var(--text); margin:0 0 1.3rem;
     max-width:60ch; margin-left:auto; margin-right:auto;
   }
   .signature{
-    font-family:var(--font-script); font-size:1.9rem; color:var(--accent);
+    font-family:var(--font-script); font-size:2.2rem; color:var(--accent);
     text-align:right; max-width:60ch; margin:1.6rem auto 0; line-height:1.2;
   }
   .signature small{
-    display:block; font-family:var(--font-body); font-style:italic; font-size:.95rem; color:var(--text-soft);
+    display:block; font-family:var(--font-body); font-style:italic; font-size:1.08rem; color:var(--text-soft);
   }
 
   .counter{
@@ -187,20 +212,20 @@
   }
   .counter-unit{ font-size:.62em; }
   .counter-label{
-    font-family:var(--font-mono); font-size:.68rem; letter-spacing:.05em; color:var(--text-soft);
+    font-family:var(--font-mono); font-size:.8rem; letter-spacing:.05em; color:var(--text-soft);
     text-transform:uppercase;
   }
   .counter-detail{
-    font-family:var(--font-body); font-style:italic; font-size:.95rem; color:var(--text);
+    font-family:var(--font-body); font-style:italic; font-size:1.1rem; color:var(--text);
     margin-top:.35rem;
   }
   .counter-sep{ width:40px; height:1px; background:var(--line); margin:.7rem 0 .5rem; }
   .counter-days{
-    font-family:var(--font-body); font-size:.92rem; color:var(--text-soft);
+    font-family:var(--font-body); font-size:1.05rem; color:var(--text-soft);
   }
   .counter-days strong{ color:var(--accent); font-weight:600; font-variant-numeric:tabular-nums; }
   .counter-next{
-    font-family:var(--font-mono); font-size:.66rem; letter-spacing:.04em; color:var(--text-soft);
+    font-family:var(--font-mono); font-size:.78rem; letter-spacing:.04em; color:var(--text-soft);
     margin-top:.35rem;
   }
 
@@ -218,7 +243,7 @@
     font-size:clamp(1.6rem,4vw,2.2rem); margin:.2rem 0 .4rem; text-wrap:balance;
   }
   .gallery-header p{
-    font-family:var(--font-mono); font-size:.75rem; letter-spacing:.05em; color:var(--text-soft); margin:0;
+    font-family:var(--font-mono); font-size:.88rem; letter-spacing:.05em; color:var(--text-soft); margin:0;
   }
 
   .gallery{
@@ -241,7 +266,7 @@
     width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:var(--line);
   }
   .polaroid figcaption{
-    font-family:var(--font-mono); font-size:.65rem; letter-spacing:.04em; color:#5b4a44;
+    font-family:var(--font-mono); font-size:.75rem; letter-spacing:.04em; color:#5b4a44;
     text-align:center; margin-top:.55rem;
   }
 
@@ -258,7 +283,7 @@
     font-size:clamp(1.5rem,4vw,2rem); margin:0 0 .5rem; text-wrap:balance;
   }
   .closing p{
-    font-family:var(--font-mono); font-size:.75rem; letter-spacing:.06em; color:var(--text-soft); margin:0;
+    font-family:var(--font-mono); font-size:.88rem; letter-spacing:.06em; color:var(--text-soft); margin:0;
   }
 
   /* ---------- lightbox ---------- */
@@ -283,6 +308,20 @@
     align-items:center; gap:.4rem;
   }
   body.opened .replay-btn{ display:inline-flex; }
+
+  /* ---------- background song ---------- */
+  .yt-holder{
+    position:fixed; left:-9999px; top:0; width:200px; height:200px;
+    opacity:0; pointer-events:none;
+  }
+  .music-btn{
+    display:none; position:fixed; top:max(1rem, env(safe-area-inset-top,0px)); right:1rem; z-index:40;
+    width:44px; height:44px; border-radius:50%; border:none;
+    background:var(--accent); color:#fff; font-size:1.1rem; cursor:pointer;
+    box-shadow:0 8px 20px var(--shadow);
+    align-items:center; justify-content:center;
+  }
+  body.opened .music-btn{ display:inline-flex; }
 </style>
 </head>
 <body>
@@ -302,6 +341,13 @@
 
   <div class="envelope-overlay" id="envelope" role="button" tabindex="0" aria-label="Abrir la carta">
     <div class="envelope">
+      <div class="letter-paper" aria-hidden="true">
+        <span class="paper-title">Para ti &#10084;</span>
+        <span class="paper-line"></span>
+        <span class="paper-line"></span>
+        <span class="paper-line"></span>
+        <span class="paper-line"></span>
+      </div>
       <div class="envelope-body">
         <div class="envelope-address">
           <span class="to">Mi vida entera</span>
@@ -318,7 +364,7 @@
 
   <main class="letter-content">
     <section class="letter">
-      <p class="eyebrow">D&iacute;a del Amor y la Amistad &middot; 19 de septiembre</p>
+      <p class="eyebrow">La historia de nuestra vida juntos</p>
       <h1 class="salutation">Mi vida entera,</h1>
 
       <div class="counter">
@@ -381,6 +427,9 @@
 
   <button class="replay-btn" id="replay" type="button">&#8635; Volver a la carta</button>
 
+  <button class="music-btn" id="music-btn" type="button" aria-label="Pausar la canci&oacute;n">&#10074;&#10074;</button>
+  <div class="yt-holder" aria-hidden="true"><div id="yt-player"></div></div>
+
 </div>
 
 <script>
@@ -417,10 +466,72 @@
         + ' meses · ' + nextDate.getDate() + ' de ' + MONTH_NAMES[nextDate.getMonth()];
     document.getElementById('months-next').textContent = nextText;
 
+    // Apertura lenta: se rompe el sello, se abre la solapa, sale la carta y se desvanece el sobre
     var envelope = document.getElementById('envelope');
+    var envelopeCard = envelope.querySelector('.envelope');
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var LETTER_OUT_MS = reducedMotion ? 200 : 2500;
+    var OPENED_MS = reducedMotion ? 400 : 4400;
+    var HIDE_MS = OPENED_MS + 1250;
+    var isOpening = false;
+    var timers = [];
+
+    // Canción de fondo: "Solo Para Ti (Alt. Version)" de Camila (YouTube, reproductor oculto)
+    var SONG_VIDEO_ID = '0Ui6XQJR8zY';
+    var SONG_VOLUME = 80;
+    var player = null;
+    var playerReady = false;
+    var playWhenReady = false;
+    var musicBtn = document.getElementById('music-btn');
+
+    function setMusicButton(isPlaying){
+      musicBtn.innerHTML = isPlaying ? '&#10074;&#10074;' : '&#9835;';
+      musicBtn.setAttribute('aria-label', isPlaying ? 'Pausar la canción' : 'Reproducir la canción');
+    }
+    function playSong(){
+      if (!playerReady){ playWhenReady = true; return; }
+      player.unMute();
+      player.setVolume(SONG_VOLUME);
+      player.playVideo();
+    }
+    function stopSong(){
+      playWhenReady = false;
+      if (!playerReady) return;
+      player.pauseVideo();
+      player.seekTo(0, true);
+    }
+    window.onYouTubeIframeAPIReady = function(){
+      var playerVars = { playsinline: 1, controls: 0, rel: 0, disablekb: 1 };
+      if (location.protocol.indexOf('http') === 0) playerVars.origin = location.origin;
+      player = new YT.Player('yt-player', {
+        width: 200, height: 200, videoId: SONG_VIDEO_ID, playerVars: playerVars,
+        events: {
+          onReady: function(){ playerReady = true; if (playWhenReady) playSong(); },
+          onStateChange: function(e){ setMusicButton(e.data === YT.PlayerState.PLAYING); },
+          onError: function(e){ console.error('No se pudo reproducir la canción (código ' + e.data + ')'); }
+        }
+      });
+    };
+    var ytScript = document.createElement('script');
+    ytScript.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(ytScript);
+
+    musicBtn.addEventListener('click', function(){
+      if (!playerReady) return;
+      if (player.getPlayerState() === YT.PlayerState.PLAYING) player.pauseVideo();
+      else playSong();
+    });
+
     function openEnvelope(){
-      document.body.classList.add('opened');
-      setTimeout(function(){ envelope.setAttribute('hidden',''); }, 950);
+      if (isOpening) return;
+      isOpening = true;
+      playSong();
+      document.body.classList.add('opening');
+      timers = [
+        setTimeout(function(){ document.body.classList.add('letter-out'); }, LETTER_OUT_MS),
+        setTimeout(function(){ document.body.classList.add('opened'); }, OPENED_MS),
+        setTimeout(function(){ envelope.setAttribute('hidden',''); }, HIDE_MS)
+      ];
     }
     envelope.addEventListener('click', openEnvelope);
     envelope.addEventListener('keydown', function(e){
@@ -429,8 +540,14 @@
 
     var replay = document.getElementById('replay');
     replay.addEventListener('click', function(){
+      timers.forEach(clearTimeout);
+      isOpening = false;
+      stopSong();
+      envelopeCard.classList.add('no-anim');
       envelope.removeAttribute('hidden');
+      document.body.classList.remove('opening', 'letter-out');
       void envelope.offsetHeight;
+      envelopeCard.classList.remove('no-anim');
       document.body.classList.remove('opened');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
