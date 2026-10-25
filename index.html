@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="only light">
 <title>Para Mi Vida Entera</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,400;1,500;1,600&family=DM+Serif+Display:ital@1&display=swap">
 <style>
@@ -29,34 +30,8 @@
     --font-mono:var(--font-body);
     --font-number:'DM Serif Display', Georgia, 'Times New Roman', serif;
   }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --bg:#180B10;
-      --surface:#241019;
-      --surface-2:#2E1420;
-      --envelope:#2B1319;
-      --envelope-flap:#33161D;
-      --text:#F3E1DC;
-      --text-soft:#C99AA5;
-      --accent:#E97C93;
-      --accent-2:#E0B85E;
-      --line:#3D1E29;
-      --shadow:rgba(0,0,0,.45);
-    }
-  }
-  :root[data-theme="dark"]{
-    --bg:#180B10;
-    --surface:#241019;
-    --surface-2:#2E1420;
-    --envelope:#2B1319;
-    --envelope-flap:#33161D;
-    --text:#F3E1DC;
-    --text-soft:#C99AA5;
-    --accent:#E97C93;
-    --accent-2:#E0B85E;
-    --line:#3D1E29;
-    --shadow:rgba(0,0,0,.45);
-  }
+  /* always light, even when the device uses a dark theme */
+  :root{ color-scheme: only light; }
 
   body{ background:var(--bg); }
 
